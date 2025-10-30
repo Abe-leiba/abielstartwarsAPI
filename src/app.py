@@ -40,7 +40,7 @@ def sitemap():
 @app.route('/people', methods=["GET"])
 def get_all_people():
     response_body = Character.query.all()
-    response_body = list(map(lamda x: x.serialize(), response_body))
+    response_body = list(map(lambda x: x.serialize(), response_body))
     return jsonify(response_body), 200
 
 
@@ -68,18 +68,13 @@ def get_single_user_favorites(user_id):
     pass
 
 
-@app.route('/favorite/people/<int:user_id>/favorites', methods=["POST"])
-def add_favorite_person(people_id):
-    pass
-
-
 @app.route('/favorite/planets/<int:planet_id>', methods=["POST"])
-def add_favorite_person(people_id):
+def add_favorite_planet(planet_id):
     #retrieve the information found in the BODY portion 
     #of the client request
     data = request.get_json()
-    new_favorite_person = Favorite(user_id = data["user_id"], character_id = data[people_id])
-    db.session.add(new_favorite_person)
+    new_favorite_planet = Favorite(user_id = data["user_id"], planet_id = data[planet_id])
+    db.session.add(new_favorite_planet)
     db.session.commit()
 
 @app.route('/favorite/people/<int:people_id>', methods=["POST"])
