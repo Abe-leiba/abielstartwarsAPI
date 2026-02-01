@@ -11,11 +11,8 @@ class User(db.Model):
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
-
     #relationship
-    favorite: Mapped["Favorite"] = relationship(back_populates="user")
-
-
+    favorites: Mapped[List["Favorite"]] = relationship(back_populates="user")
     def serialize(self):
         return {
             "id": self.id,
@@ -28,12 +25,12 @@ class User(db.Model):
 class Character(db.Model):
     id: Mapped[int] = mapped_column(primary_key = True)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
-    height: Mapped[str] = mapped_column(String(120))
-    mass: Mapped[str] = mapped_column(String(120))
-    hair_color: Mapped[str] = mapped_column()
+    height: Mapped[str] = mapped_column(String(120), nullable=True)
+    mass: Mapped[str] = mapped_column(String(120), nullable=True)
+    hair_color: Mapped[str] = mapped_column(String(120), nullable=True)
       
     #relationshipes
-    favorites: Mapped[List["Favorite"]] = relationship()
+    favorites: Mapped[List["Favorite"]] = relationship(back_populates="character")
 
     def serialize(self):
         return {
@@ -46,10 +43,10 @@ class Planet(db.Model):
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     diameter: Mapped[str] = mapped_column(String(120))
     climate: Mapped[str] = mapped_column(String(120))
-    terrain: Mapped[str] = mapped_column()
+    terrain: Mapped[str] = mapped_column(String(120))
 
     #relationshipes
-    favorites: Mapped[List["Favorite"]] = relationship()
+    favorites: Mapped[List["Favorite"]] = relationship(back_populates="planet")
 
     def serialize(self):
         return {
@@ -59,12 +56,16 @@ class Planet(db.Model):
 
 class Favorite(db.Model):
     id: Mapped[int] = mapped_column(primary_key = True)
-   #relationship
-   #one to one
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    user: Mapped["User"] = relationship(back_populates="favorite")
+   #relationships
+   #one to one with class user
 
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    user: Mapped["User"] = relationship(back_populates="favorites")
+
+  #one to many with class character and planet
   
     character_id: Mapped[int] = mapped_column(ForeignKey("character.id"))
+    character: Mapped["Character"] = relationship(back_populates="favorites")
 
     planet_id: Mapped[int] = mapped_column(ForeignKey("planet.id"))
+    planet: Mapped["Planet"] = relationship(back_populates="favorites")
